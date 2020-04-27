@@ -51,6 +51,7 @@ class ClippedView @JvmOverloads constructor(
         drawDifferenceClippingShape(canvas)
         drawCircularClippingShape(canvas)
         drawIntersectionClippingShape(canvas)
+        drawCombinedClippingShape(canvas)
     }
 
     private fun drawClippedRectangle(canvas: Canvas) {
@@ -175,6 +176,27 @@ class ClippedView @JvmOverloads constructor(
 
         //after above clipping, only the intersection area between 2 rectangles is available
         //for drawing so drawing the original shape now will draw on that space
+        drawClippedRectangle(canvas)
+        canvas.restore()
+    }
+
+    private fun drawCombinedClippingShape(canvas: Canvas) {
+        canvas.save()
+        canvas.translate(columnOne, rowThree)
+        path.rewind()
+        path.addCircle(
+            clipRectLeft + rectInset + circleRadius,
+            clipRectTop + circleRadius + rectInset,
+            circleRadius,Path.Direction.CCW
+        )
+        path.addRect(
+            clipRectRight / 2 - circleRadius,
+            clipRectTop + circleRadius + rectInset,
+            clipRectRight / 2 + circleRadius,
+            clipRectBottom - rectInset,Path.Direction.CCW
+        )
+        //only the area defined by the shapes (circle+rectangle) inside the path is available for drawing
+        canvas.clipPath(path)
         drawClippedRectangle(canvas)
         canvas.restore()
     }

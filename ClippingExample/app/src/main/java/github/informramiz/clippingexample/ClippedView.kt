@@ -62,6 +62,7 @@ class ClippedView @JvmOverloads constructor(
         drawRoundedRectangleClippingShape(canvas)
         drawRectangleClippingShape(canvas)
         drawTranslatedTextShape(canvas)
+        drawSkewedTextShape(canvas)
     }
 
     private fun drawClippedRectangle(canvas: Canvas) {
@@ -247,9 +248,20 @@ class ClippedView @JvmOverloads constructor(
         canvas.save()
         canvas.translate(columnTwo, textRow)
         paint.color = Color.GREEN
-        // Align the RIGHT side of the text with the origin
+        // Align the START side of the text with the origin
         paint.textAlign = Paint.Align.LEFT
         canvas.drawText(resources.getString(R.string.translated), clipRectLeft, clipRectTop, paint)
+        canvas.restore()
+    }
+
+    private fun drawSkewedTextShape(canvas: Canvas) {
+        canvas.save()
+        canvas.translate(columnTwo, textRow)
+        canvas.skew(0.2f, 0.3f)
+        paint.color = Color.YELLOW
+        // Align the END side of the text with the origin
+        paint.textAlign = Paint.Align.RIGHT
+        canvas.drawText(resources.getString(R.string.skewed), clipRectLeft, clipRectTop, paint)
         canvas.restore()
     }
 }

@@ -49,6 +49,7 @@ class ClippedView @JvmOverloads constructor(
         canvas.drawColor(Color.GRAY)
         drawOriginalShape(canvas)
         drawDifferenceClippingShape(canvas)
+        drawCircularClippingShape(canvas)
     }
 
     private fun drawClippedRectangle(canvas: Canvas) {
@@ -116,6 +117,28 @@ class ClippedView @JvmOverloads constructor(
 
         //after above clipping, only the difference (space) between 2 rectangles is available
         //for drawing so drawing the original shape now will draw on that space
+        drawClippedRectangle(canvas)
+        canvas.restore()
+    }
+
+    /**
+     * Draws the a circle to make this area unavailable for clipping
+     */
+    private fun drawCircularClippingShape(canvas: Canvas) {
+        canvas.save()
+        canvas.translate(columnOne, rowTwo)
+
+        // Clears any lines and curves from the path but unlike reset(),
+        // keeps the internal data structure for faster reuse.
+        path.rewind()
+        path.addCircle(circleRadius, clipRectBottom - circleRadius, circleRadius, Path.Direction.CCW)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            canvas.clipOutPath(path)
+        } else {
+            canvas.clipPath(path, Region.Op.DIFFERENCE)
+        }
+
         drawClippedRectangle(canvas)
         canvas.restore()
     }

@@ -44,6 +44,13 @@ class ClippedView @JvmOverloads constructor(
     private val rowFour = rowThree + rectInset + clipRectBottom
     private val textRow = rowFour + (1.5f * clipRectBottom)
 
+    private var roundRectF = RectF(
+        rectInset,
+        rectInset,
+        clipRectRight - rectInset,
+        clipRectBottom - rectInset
+    )
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawColor(Color.GRAY)
@@ -52,6 +59,7 @@ class ClippedView @JvmOverloads constructor(
         drawCircularClippingShape(canvas)
         drawIntersectionClippingShape(canvas)
         drawCombinedClippingShape(canvas)
+        drawRoundedRectangleClippingShape(canvas)
     }
 
     private fun drawClippedRectangle(canvas: Canvas) {
@@ -197,6 +205,22 @@ class ClippedView @JvmOverloads constructor(
         )
         //only the area defined by the shapes (circle+rectangle) inside the path is available for drawing
         canvas.clipPath(path)
+        drawClippedRectangle(canvas)
+        canvas.restore()
+    }
+
+    /**
+     * Draw a rounded rectangle to make edges and sides clipped (unavailable) for drawing
+     */
+    private fun drawRoundedRectangleClippingShape(canvas: Canvas) {
+        canvas.save()
+        canvas.translate(columnTwo, rowThree)
+        //clear shapes in path
+        path.rewind()
+        path.addRoundRect(roundRectF, clipRectRight/4, clipRectRight/4, Path.Direction.CCW)
+        //now clip this path, making area covered by shapes in the path unavailable for drawing
+        canvas.clipPath(path)
+
         drawClippedRectangle(canvas)
         canvas.restore()
     }

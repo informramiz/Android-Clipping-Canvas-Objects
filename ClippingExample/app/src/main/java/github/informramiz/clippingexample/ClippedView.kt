@@ -60,6 +60,7 @@ class ClippedView @JvmOverloads constructor(
         drawIntersectionClippingShape(canvas)
         drawCombinedClippingShape(canvas)
         drawRoundedRectangleClippingShape(canvas)
+        drawRectangleClippingShape(canvas)
     }
 
     private fun drawClippedRectangle(canvas: Canvas) {
@@ -218,6 +219,22 @@ class ClippedView @JvmOverloads constructor(
         //clear shapes in path
         path.rewind()
         path.addRoundRect(roundRectF, clipRectRight/4, clipRectRight/4, Path.Direction.CCW)
+        //now clip this path, making area covered by shapes in the path unavailable for drawing
+        canvas.clipPath(path)
+
+        drawClippedRectangle(canvas)
+        canvas.restore()
+    }
+
+    /**
+     * Draw a rectangle to make edges and sides clipped (unavailable) for drawing
+     */
+    private fun drawRectangleClippingShape(canvas: Canvas) {
+        canvas.save()
+        canvas.translate(columnOne, rowFour)
+        //clear shapes in path
+        path.rewind()
+        path.addRect(roundRectF, Path.Direction.CCW)
         //now clip this path, making area covered by shapes in the path unavailable for drawing
         canvas.clipPath(path)
 

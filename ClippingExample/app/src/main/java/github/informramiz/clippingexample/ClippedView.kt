@@ -61,6 +61,7 @@ class ClippedView @JvmOverloads constructor(
         drawCombinedClippingShape(canvas)
         drawRoundedRectangleClippingShape(canvas)
         drawRectangleClippingShape(canvas)
+        drawTranslatedTextShape(canvas)
     }
 
     private fun drawClippedRectangle(canvas: Canvas) {
@@ -239,6 +240,16 @@ class ClippedView @JvmOverloads constructor(
         canvas.clipPath(path)
 
         drawClippedRectangle(canvas)
+        canvas.restore()
+    }
+
+    private fun drawTranslatedTextShape(canvas: Canvas) {
+        canvas.save()
+        canvas.translate(columnTwo, textRow)
+        paint.color = Color.GREEN
+        // Align the RIGHT side of the text with the origin
+        paint.textAlign = Paint.Align.LEFT
+        canvas.drawText(resources.getString(R.string.translated), clipRectLeft, clipRectTop, paint)
         canvas.restore()
     }
 }

@@ -50,6 +50,20 @@ class ClippedView @JvmOverloads constructor(
         super.onDraw(canvas)
         canvas.drawColor(Color.GRAY)
         drawClippedRectangle(canvas)
+
+        //draw a line inside the clipped rectangle, color it red
+        paint.color = Color.RED
+        canvas.drawLine(clipRectLeft, clipRectTop, clipRectBottom, clipRectRight, paint)
+
+        //draw a circle inside the clipped rectangle, color it green
+        paint.color = Color.GREEN
+        canvas.drawCircle(circleRadius, clipRectBottom - circleRadius, circleRadius, paint)
+
+        //draw text, color it blue
+        paint.color = Color.BLUE
+        paint.textAlign = Paint.Align.RIGHT
+        paint.textSize = textSize
+        canvas.drawText(resources.getString(R.string.clipping), clipRectRight, textOffset, paint)
     }
 
     private fun drawClippedRectangle(canvas: Canvas) {

@@ -50,6 +50,7 @@ class ClippedView @JvmOverloads constructor(
         drawOriginalShape(canvas)
         drawDifferenceClippingShape(canvas)
         drawCircularClippingShape(canvas)
+        drawIntersectionClippingShape(canvas)
     }
 
     private fun drawClippedRectangle(canvas: Canvas) {
@@ -139,6 +140,41 @@ class ClippedView @JvmOverloads constructor(
             canvas.clipPath(path, Region.Op.DIFFERENCE)
         }
 
+        drawClippedRectangle(canvas)
+        canvas.restore()
+    }
+
+    private fun drawIntersectionClippingShape(canvas: Canvas) {
+        canvas.save()
+        canvas.translate(columnTwo, rowTwo)
+
+        //we will achieve this effect by clipping (making unavailable) 2 rectangles (1 inside the other) and
+        //only their intersection (region common between rectangles) will be available for drawing when we
+        //draw the original shape
+
+        //draw the first rectangle
+        canvas.clipRect(2 * rectInset, 2 * rectInset, clipRectRight - rectInset * 2, clipRectBottom - rectInset * 2)
+
+        //draw the 2nd rectangle for clipping by telling the OS that only their intersection is
+        //available for drawing
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            canvas.clipRect(
+                rectInset * 4,
+                rectInset * 4,
+                clipRectRight - rectInset * 4,
+                clipRectBottom - rectInset * 4
+            )
+        } else {
+            canvas.clipRect(rectInset * 4,
+                rectInset * 4,
+                clipRectRight - rectInset * 4,
+                clipRectBottom - rectInset * 4,
+                Region.Op.INTERSECT
+            )
+        }
+
+        //after above clipping, only the intersection area between 2 rectangles is available
+        //for drawing so drawing the original shape now will draw on that space
         drawClippedRectangle(canvas)
         canvas.restore()
     }

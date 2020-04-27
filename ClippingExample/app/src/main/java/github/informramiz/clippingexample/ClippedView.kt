@@ -1,10 +1,8 @@
 package github.informramiz.clippingexample
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 
@@ -50,6 +48,7 @@ class ClippedView @JvmOverloads constructor(
         super.onDraw(canvas)
         canvas.drawColor(Color.GRAY)
         drawOriginalShape(canvas)
+        drawDifferenceClippingShape(canvas)
     }
 
     private fun drawClippedRectangle(canvas: Canvas) {
@@ -84,5 +83,39 @@ class ClippedView @JvmOverloads constructor(
         drawClippedRectangle(canvas)
         //restore the original origin of the canvas
         canvas.restore()
+    }
+
+    private fun drawDifferenceClippingShape(canvas: Canvas) {
+        canvas.save()
+        canvas.translate(columnTwo, rowOne)
+
+        //we will achieve this effect by clipping (making unavailable) 2 rectangles (1 inside the other) and
+        //only their difference (region between rectangles) will be available for drawing when we
+        //draw the original shape
+
+        //draw the first rectangle
+        canvas.clipRect(2 * rectInset, 2 * rectInset, clipRectRight - rectInset * 2, clipRectBottom - rectInset * 2)
+
+        //draw the 2nd rectangle for clipping by telling the OS that only their difference is
+        //available for drawing
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            canvas.clipOutRect(
+                rectInset * 4,
+                rectInset * 4,
+                clipRectRight - rectInset * 4,
+                clipRectBottom - rectInset * 4
+            )
+        } else {
+            canvas.clipRect(rectInset * 4,
+                rectInset * 4,
+                clipRectRight - rectInset * 4,
+                clipRectBottom - rectInset * 4,
+                Region.Op.DIFFERENCE
+            )
+        }
+
+        //after above clipping, only the difference (space) between 2 rectangles is available
+        //for drawing so drawing the original shape now will draw on that space
+        drawClippedRectangle(canvas)
     }
 }

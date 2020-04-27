@@ -117,5 +117,6 @@ class ClippedView @JvmOverloads constructor(
         //after above clipping, only the difference (space) between 2 rectangles is available
         //for drawing so drawing the original shape now will draw on that space
         drawClippedRectangle(canvas)
+        canvas.restore()
     }
 }

@@ -49,7 +49,16 @@ class ClippedView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawColor(Color.GRAY)
-        drawClippedRectangle(canvas)
+        drawOriginalShape(canvas)
+    }
+
+    private fun drawClippedRectangle(canvas: Canvas) {
+        //clip the entire frame to this rectangle, this will make area
+        //other than this rectangle unavailable for drawing and all drawing commands
+        //will actually happen in the boundary of this rectangle only
+        canvas.clipRect(clipRectLeft, clipRectTop, clipRectRight, clipRectBottom)
+        //set the rectangle color to white
+        canvas.drawColor(Color.WHITE)
 
         //draw a line inside the clipped rectangle, color it red
         paint.color = Color.RED
@@ -66,12 +75,14 @@ class ClippedView @JvmOverloads constructor(
         canvas.drawText(resources.getString(R.string.clipping), clipRectRight, textOffset, paint)
     }
 
-    private fun drawClippedRectangle(canvas: Canvas) {
-        //clip the entire frame to this rectangle, this will make area
-        //other than this rectangle unavailable for drawing and all drawing commands
-        //will actually happen in the boundary of this rectangle only
-        canvas.clipRect(clipRectLeft, clipRectTop, clipRectRight, clipRectBottom)
-        //set the rectangle color to white
-        canvas.drawColor(Color.WHITE)
+    private fun drawOriginalShape(canvas: Canvas) {
+        //save the current state of canvas (to save the original origin of the canvas)
+        canvas.save()
+        //translate the origin of the canvas to our desired position
+        canvas.translate(columnOne, rowOne)
+        //now draw the original rectangle with respect to this origin
+        drawClippedRectangle(canvas)
+        //restore the original origin of the canvas
+        canvas.restore()
     }
 }
